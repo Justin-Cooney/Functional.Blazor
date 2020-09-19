@@ -56,11 +56,14 @@ stages:
         downloadType: 'single'
         artifactName: 'exampleapp'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
+        
+
+
     - task: AzureFileCopy@4
       inputs:
-        SourcePath: '$(System.ArtifactsDirectory)/exampleapp'
+        SourcePath: '$(System.ArtifactsDirectory)/*'
         azureSubscription: 'functionalblazor_ServiceConnection'
         Destination: 'AzureBlob'
         storage: 'functionalblazor'
         ContainerName: '$web'
+        cleanTargetBeforeCopy: true
