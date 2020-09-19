@@ -7,6 +7,8 @@
     <Description>A collection of Blazor Component for the C# Functional library</Description>
     <PackageProjectUrl>https://functionalblazor.z13.web.core.windows.net/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Justin-Cooney/Functional.Blazor</RepositoryUrl>
+	<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">0.0.1-local</Version>
+	<Version Condition=" '$(BUILD_BUILDNUMBER)' != '' ">$(BUILD_BUILDNUMBER)</Version>
   </PropertyGroup>
 
 
