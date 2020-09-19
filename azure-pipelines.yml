@@ -8,13 +8,14 @@ pool:
 
 variables:
   exampleAppProject: '**/Functional.Blazor.ExampleApp.csproj'
+  componentsProject: '**/Functional.Blazor.Components.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
 stages:
 - stage: Build
   jobs:
-  - job: Build
+  - job: BuildExampleApp
     steps:
     - task: NuGetToolInstaller@1
     - task: NuGetCommand@2
@@ -42,6 +43,20 @@ stages:
         ArtifactName: 'exampleapp'
         publishLocation: 'Container'
 
+  - job: BuildComponents
+    steps:
+    - task: NuGetToolInstaller@1
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        versioningScheme: 'off'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)'
+        ArtifactName: 'components'
+        publishLocation: 'Container'
+
 - stage: Int
   dependsOn:
   - Build
@@ -62,6 +77,17 @@ stages:
         storage: 'functionalBlazor-int'
         ContainerName: '$web'
         cleanTargetBeforeCopy: true
+
+  - job: PublishDevelopNuget
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'components'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    
+    
 
 - stage: Prod
   dependsOn:
