@@ -59,14 +59,21 @@
 	}
 </style>
 
-<h1>Functional.Blazor.Components @(GetType().Assembly.GetName().Version.ToString())</h1>
-
-This page provides a list of examples for <a href="https://github.com/Justin-Cooney/Functional.Blazor">Functional.Blazor.Components</a>.
+<h1>Functional.Blazor.Components</h1>
+<h6 style="color: grey;">@(string.Join('.', GetType().Assembly.GetName().Version.ToString().Split('.').Take(3)))</h6>
+This page provides documentation and examples for <a href="https://github.com/Justin-Cooney/Functional.Blazor">Functional.Blazor.Components</a>.
 
 <hr />
 
 <h3 id="Some">Some</h3>
+<p>
+	<ul>
+		<li><b>Option</b><i> An Option&lt;T&gt;</i></li>
+	</ul>
+	Displays content if the option contains some value. Context is set to the option's value.
+</p>
 <pre><code>@("<Some Option=\"MyOption\" Context=\"text\">Some: @text</Some>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { SomeOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
 <button @onclick="@(() => { SomeOption = Option.Some(Option.None<string>()); })">None</button>
 <div class="ResultBlock">
@@ -82,7 +89,14 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="None">None</h3>
+<p>
+	<ul>
+		<li><b>Option</b><i> An Option&lt;T&gt;</i></li>
+	</ul>
+	Displays content if the option is empty.
+</p>
 <pre><code>@("<None Option=\"MyOption\">None</None>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { NoneOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
 <button @onclick="@(() => { NoneOption = Option.Some(Option.None<string>()); })">None</button>
 <div class="ResultBlock">
@@ -98,7 +112,16 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="OptionMatch">OptionMatch</h3>
+<p>
+	<ul>
+		<li><b>Option</b><i> An Option&lt;T&gt;</i></li>
+		<li><b>Some</b><i> Render fragement of content to display if the Option contains some value. Context is set to the option's value.</i></li>
+		<li><b>None</b><i> Render fragement of content to display if the Option is empty.</i></li>
+	</ul>
+	Displays different content based on whether the Option has some value or is empty.
+</p>
 <pre><code>@("<OptionMatch Option=\"MyOption\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n</OptionMatch>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { OptionMatchOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
 <button @onclick="@(() => { OptionMatchOption = Option.Some(Option.None<string>()); })">None</button>
 <div class="ResultBlock">
@@ -117,7 +140,17 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="OptionMatchAsync">OptionMatchAsync</h3>
+<p>
+	<ul>
+		<li><b>Option</b><i> A Task&lt;Option&lt;T&gt;&gt;</i></li>
+		<li><b>Some</b><i> Render fragement of content to display if the Option contains some value. Context is set to the option's value.</i></li>
+		<li><b>None</b><i> Render fragement of content to display if the Option is empty.</i></li>
+		<li><b>Loading</b><i> Render fragement of content to display if the Task has not yet completed.</i></li>
+	</ul>
+	Displays different content based on whether the task has some value, is empty, or has not yet completed.
+</p>
 <pre><code>@("<OptionMatchAsync Option=\"myOption\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n\t<Loading>Loading. . .</Loading>\n</OptionMatchAsync>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { OptionMatchAsyncOption = Option.Some<Task<Option<string>>>(OptionMatchAsync_SomeAsync()); })">Some</button>
 <button @onclick="@(() => { OptionMatchAsyncOption = Option.Some<Task<Option<string>>>(OptionMatchAsync_NoneAsync()); })">None</button>
 <div class="ResultBlock">
@@ -147,8 +180,18 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="OptionFactory">OptionFactory</h3>
-<pre><code>@("<OptionFactory @ref=\"myFactory\" Factory=\"GetOptionMethod\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n</OptionFactory>")</code></pre>
+<p>
+	<ul>
+		<li><b>Factory</b><i> A Func&lt;Option&lt;T&gt;&gt;</i></li>
+		<li><b>Some</b><i> Render fragement of content to display if the Option contains some value. Context is set to the option's value.</i></li>
+		<li><b>None</b><i> Render fragement of content to display if the Option is empty.</i></li>
+		<li><b>InitializeWithValue</b><i> If true then factory method will be executed upon component intialization. Otherwise the component will display blank content until its Refresh() method is called.</i></li>
+	</ul>
+	Loads and displays an option from a factory method. When the component's Refresh() method is called the factory method will be re-executed and content will be displayed for the new Option&lt;T&gt;&gt;.
+</p>
+<pre><code>@("<OptionFactory @ref=\"myFactory\" Factory=\"@(() => MyOption)\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n</OptionFactory>")</code></pre>
 <pre><code>@("<button @onclick=\"@(() => myFactory.Refresh())\">Refresh</button>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { optionFactoryIsSome = true; optionFactory.Refresh(); })">Refresh With Some</button>
 <button @onclick="@(() => { optionFactoryIsSome = false; optionFactory.Refresh(); })">Refresh With None</button>
 <div class="ResultBlock">
@@ -166,8 +209,19 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="OptionFactoryAsync">OptionFactoryAsync</h3>
-<pre><code>@("<OptionFactoryAsync @ref=\"myFactory\" Factory=\"GetOptionTask\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n\t<Loading>Loading. . .</Loading>\n</OptionFactoryAsync>")</code></pre>
+<p>
+	<ul>
+		<li><b>Factory</b><i> A Func&lt;Task&lt;Option&lt;T&gt;&gt;&gt;</i></li>
+		<li><b>Some</b><i> Render fragement of content to display if the Option contains some value. Context is set to the option's value.</i></li>
+		<li><b>None</b><i> Render fragement of content to display if the Option is empty.</i></li>
+		<li><b>Loading</b><i> Render fragement of content to display if the current factory Task has not yet completed.</i></li>
+		<li><b>InitializeWithValue</b><i> If true then factory method will be executed upon component intialization. Otherwise the component will display blank content until its Refresh() method is called.</i></li>
+	</ul>
+	Loads and displays an option from a factory method. When the component's Refresh() method is called the factory method will be re-executed and content will be displayed for the new Task&lt;Option&lt;T&gt;&gt;&gt;.
+</p>
+<pre><code>@("<OptionFactoryAsync @ref=\"myFactory\" Factory=\"@(() => MyOptionTask)\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n\t<Loading>Loading. . .</Loading>\n</OptionFactoryAsync>")</code></pre>
 <pre><code>@("<button @onclick=\"@(async () => await myFactory.Refresh())\">Refresh</button>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(async () => { optionFactoryAsyncIsSome = true; await optionFactoryAsync.Refresh(); })">Refresh With Some</button>
 <button @onclick="@(async () => { optionFactoryAsyncIsSome = false; await optionFactoryAsync.Refresh(); })">Refresh With None</button>
 <div class="ResultBlock">
@@ -191,7 +245,14 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="Success">Success</h3>
+<p>
+	<ul>
+		<li><b>Result</b><i> A Result&lt;TSuccess, TFailure&gt;</i></li>
+	</ul>
+	Displays content if the result is successful. Context is set to the result's success value.
+</p>
 <pre><code>@("<Success Result=\"MyResult\" Context=\"text\">Success: @text</Success>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { SuccessResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
 <button @onclick="@(() => { SuccessResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
 <div class="ResultBlock">
@@ -207,7 +268,14 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="Failure">Failure</h3>
+<p>
+	<ul>
+		<li><b>Result</b><i> A Result&lt;TSuccess, TFailure&gt;</i></li>
+	</ul>
+	Displays content if the result is failed. Context is set to the result's failure value.
+</p>
 <pre><code>@("<Failure Result=\"MyResult\" Context=\"text\">Failure: @text</Failure>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { FailureResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
 <button @onclick="@(() => { FailureResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
 <div class="ResultBlock">
@@ -223,7 +291,16 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="ResultMatch">ResultMatch</h3>
+<p>
+	<ul>
+		<li><b>Result</b><i> A Result&lt;TSuccess, TFailure&gt;</i></li>
+		<li><b>Success</b><i> Render fragement of content to display if the Result is successful. Context is set to the option's value.</i></li>
+		<li><b>Failure</b><i> Render fragement of content to display if the Result is failed. Context is set to the result's failure value.</i></li>
+	</ul>
+	Displays different content based on whether the Result has succeeded or failed.
+</p>
 <pre><code>@("<ResultMatch Result=\"MyResult\">\n\t<Success Context=\"text\">Success: @text</Success>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n</ResultMatch>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { ResultMatchResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
 <button @onclick="@(() => { ResultMatchResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
 <div class="ResultBlock">
@@ -242,7 +319,17 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="ResultMatchAsync">ResultMatchAsync</h3>
+<p>
+	<ul>
+		<li><b>Result</b><i> A Task&lt;Result&lt;TSuccess, TFailure&gt;&gt;</i></li>
+		<li><b>Success</b><i> Render fragement of content to display if the Result is successful. Context is set to the option's value.</i></li>
+		<li><b>Failure</b><i> Render fragement of content to display if the Result is failed. Context is set to the result's failure value.</i></li>
+		<li><b>Loading</b><i> Render fragement of content to display if the Task has not yet completed.</i></li>
+	</ul>
+	Displays different content based on whether the task has succeeded, failed, or has not yet completed.
+</p>
 <pre><code>@("<ResultMatchAsync Result=\"myResultTask\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n\t<Loading>Loading. . .</Loading>\n</OptionMatchAsync>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { ResultMatchAsyncResult = Option.Some<Task<Result<string, Exception>>>(ResultMatchAsync_SuccessAsync()); })">Success</button>
 <button @onclick="@(() => { ResultMatchAsyncResult = Option.Some<Task<Result<string, Exception>>>(ResultMatchAsync_FailureAsync()); })">Failure</button>
 <div class="ResultBlock">
@@ -272,8 +359,18 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="ResultFactory">ResultFactory</h3>
-<pre><code>@("<ResultFactory @ref=\"myFactory\" Factory=\"GetResultMethod\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n</ResultFactory>")</code></pre>
+<p>
+	<ul>
+		<li><b>Factory</b><i> A Func&lt;Result&lt;TSuccess, TFailure&gt;&gt;</i></li>
+		<li><b>Success</b><i> Render fragement of content to display if the Result is successful. Context is set to the option's value.</i></li>
+		<li><b>Failure</b><i> Render fragement of content to display if the Result is failed. Context is set to the result's failure value.</i></li>
+		<li><b>InitializeWithValue</b><i> If true then factory method will be executed upon component intialization. Otherwise the component will display blank content until its Refresh() method is called.</i></li>
+	</ul>
+	Loads and displays a result from a factory method. When the component's Refresh() method is called the factory method will be re-executed and content will be displayed for the new Result&lt;TSuccess, TFailure&gt;.
+</p>
+<pre><code>@("<ResultFactory @ref=\"myFactory\" Factory=\"@(() => MyResult)\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n</ResultFactory>")</code></pre>
 <pre><code>@("<button @onclick=\"@(() => myFactory.Refresh())\">Refresh</button>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(() => { resultFactoryIsSuccess = true; resultFactory.Refresh(); })">Refresh With Success</button>
 <button @onclick="@(() => { resultFactoryIsSuccess = false; resultFactory.Refresh(); })">Refresh With Failure</button>
 <div class="ResultBlock">
@@ -291,8 +388,19 @@ This page provides a list of examples for <a href="https://github.com/Justin-Coo
 <hr />
 
 <h3 id="ResultFactoryAsync">ResultFactoryAsync</h3>
-<pre><code>@("<ResultFactoryAsync @ref=\"myFactory\" Factory=\"GetResultTask\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n\t<Loading>Loading. . .</Loading>\n</ResultFactoryAsync>")</code></pre>
+<p>
+	<ul>
+		<li><b>Factory</b><i> A Func&lt;Task&lt;Result&lt;TSuccess, TFailure&gt;&gt;&gt;</i></li>
+		<li><b>Success</b><i> Render fragement of content to display if the Result is successful. Context is set to the option's value.</i></li>
+		<li><b>Failure</b><i> Render fragement of content to display if the Result is failed. Context is set to the result's failure value.</i></li>
+		<li><b>Loading</b><i> Render fragement of content to display if the current factory Task has not yet completed.</i></li>
+		<li><b>InitializeWithValue</b><i> If true then factory method will be executed upon component intialization. Otherwise the component will display blank content until its Refresh() method is called.</i></li>
+	</ul>
+	Loads and displays a result from a factory method. When the component's Refresh() method is called the factory method will be re-executed and content will be displayed for the new Task&lt;Result&lt;TSuccess, TFailure&gt;&gt;&gt;.
+</p>
+<pre><code>@("<ResultFactoryAsync @ref=\"myFactory\" Factory=\"@(() => MyResultTask)\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n\t<Loading>Loading. . .</Loading>\n</ResultFactoryAsync>")</code></pre>
 <pre><code>@("<button @onclick=\"@(async () => await myFactory.Refresh())\">Refresh</button>")</code></pre>
+<h6>Example:</h6>
 <button @onclick="@(async () => { resultFactoryAsyncIsSuccess = true; await resultFactoryAsync.Refresh(); })">Refresh With Success</button>
 <button @onclick="@(async () => { resultFactoryAsyncIsSuccess = false; await resultFactoryAsync.Refresh(); })">Refresh With Failure</button>
 <div class="ResultBlock">
