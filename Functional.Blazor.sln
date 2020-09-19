@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30114.105
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functional.Blazor.Components", "Functional.Blazor.Components\Functional.Blazor.Components.csproj", "{290DFDF8-9725-4E4D-8CBE-399D8ED4C487}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Functional.Blazor.ExampleApp", "Functional.Blazor.ExampleApp\Functional.Blazor.ExampleApp.csproj", "{1B50C4E7-7F7B-4033-AA7E-D3C93D367257}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Functional.Blazor.ExampleApp", "Functional.Blazor.ExampleApp\Functional.Blazor.ExampleApp.csproj", "{1B50C4E7-7F7B-4033-AA7E-D3C93D367257}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
