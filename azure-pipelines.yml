@@ -16,7 +16,7 @@ steps:
 
 - task: NuGetCommand@2
   inputs:
-    restoreSolution: '$(exampleAppProject)'
+    restoreSolution: '**/*.sln'
 
 - task: VSBuild@1
   inputs:
