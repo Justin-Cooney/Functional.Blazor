@@ -11,7 +11,8 @@ variables:
   componentsProject: '**/Functional.Blazor.Components.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-
+  nugetDevelopVersion: '$(Build.BuildNumber)-develop'
+  nugetVersion: '$(Build.BuildNumber)'
 stages:
 - stage: Build
   jobs:
@@ -51,14 +52,14 @@ stages:
         packagesToPack: '$(componentsProject)'
         packDestination: '$(Build.ArtifactStagingDirectory)/componentsnugetdev'
         versioningScheme: 'byEnvVar'
-        versionEnvVar: '$(Build.BuildNumber)-develop'
+        versionEnvVar: nugetDevelopVersion
     - task: NuGetCommand@2
       inputs:
         command: 'pack'
         packagesToPack: '$(componentsProject)'
         packDestination: '$(Build.ArtifactStagingDirectory)/componentsnuget'
         versioningScheme: 'byEnvVar'
-        versionEnvVar: '$(Build.BuildNumber)'
+        versionEnvVar: nugetVersion
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
