@@ -1,4 +1,4 @@
-name: 1.0.0.$(Rev:.r)
+name: 1.0.0.$(Rev:r)
 
 trigger:
 - master
@@ -21,7 +21,7 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '$(exampleAppProject)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/exampleapp"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
@@ -32,6 +32,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '**/wwwroot'
+    PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp'
     ArtifactName: 'exampleapp'
     publishLocation: 'Container'
