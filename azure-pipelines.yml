@@ -64,7 +64,7 @@ stages:
         packagesToPack: '$(componentsProject)'
         packDirectory: '$(Build.ArtifactStagingDirectory)/componentsnuget'
         versioningScheme: 'byEnvVar'
-        versionEnvVar: 'nugetDevelopVersion'
+        versionEnvVar: 'nugetVersion'
 
     - task: PublishBuildArtifacts@1
       inputs:
