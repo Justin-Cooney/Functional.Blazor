@@ -1,4 +1,4 @@
-name: 1.0.0.$(Rev:r)
+name: $(Major).$(Minor).$(Patch)
 
 trigger:
 - master
@@ -11,6 +11,9 @@ variables:
   componentsProject: '**/Functional.Blazor.Components.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
+  Major: 1
+  Minor: 0
+  Patch: $(Rev:r)
 
 stages:
 - stage: Build
@@ -43,14 +46,32 @@ stages:
         ArtifactName: 'exampleapp'
         publishLocation: 'Container'
 
-  - job: BuildComponents
+  - job: BuildComponentsDevNuget
     steps:
     - task: NuGetToolInstaller@1
     - task: NuGetCommand@2
       inputs:
         command: 'pack'
         packagesToPack: '$(componentsProject)'
-        versioningScheme: 'off'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: '$(Build.BuildNumber)-develop'
+
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)'
+        ArtifactName: 'componentsdev'
+        publishLocation: 'Container'
+
+  - job: BuildComponentsNuget
+    steps:
+    - task: NuGetToolInstaller@1
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: '$(Build.BuildNumber)'
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)'
@@ -84,10 +105,14 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'components'
+        artifactName: 'componentsdev'
         downloadPath: '$(System.ArtifactsDirectory)'
-    
-    
+    - task: NuGetCommand@2
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
 
 - stage: Prod
   dependsOn:
