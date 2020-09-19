@@ -68,12 +68,12 @@ stages:
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)/componentsnugetdev'
-        ArtifactName: 'componentnugetdev'
+        ArtifactName: 'componentsnugetdev'
         publishLocation: 'Container'
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)/componentsnuget'
-        ArtifactName: 'componentnugetdev'
+        ArtifactName: 'componentsnuget'
         publishLocation: 'Container'
 
 - stage: Int
@@ -93,7 +93,7 @@ stages:
         SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
         azureSubscription: 'functionalBlazor-int'
         Destination: 'AzureBlob'
-        storage: 'functionalBlazor-int'
+        storage: 'functionalBlazorint'
         ContainerName: '$web'
         cleanTargetBeforeCopy: true
 
@@ -136,3 +136,18 @@ stages:
         storage: 'functionalblazor'
         ContainerName: '$web'
         cleanTargetBeforeCopy: true
+        
+  - job: PublishNuget
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'componentsnuget'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: NuGetCommand@2
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
