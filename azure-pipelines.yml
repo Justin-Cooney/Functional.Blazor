@@ -38,6 +38,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
+    PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp'
     ArtifactName: 'exampleapp'
     publishLocation: 'Container'
