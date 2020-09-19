@@ -1,0 +1,10 @@
+﻿@typeparam TValue
+
+<OptionMatch Option="@_innerOption" Context="some">
+	<Some>
+		<OptionMatch Option="@some" Some="@Some" None="@None" />
+	</Some>
+	<None>
+		@Loading
+	</None>
+</OptionMatch>

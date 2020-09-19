@@ -1,0 +1,323 @@
+﻿@page "/"
+
+<style>
+	div#slideSource {
+		opacity: 1;
+		-webkit-transition: opacity 3s;
+		-moz-transition: opacity 3s;
+		transition: opacity 3s;
+	}
+
+		div#slideSource.fade {
+			opacity: 0;
+		}
+
+	pre {
+		font-family: Operator Mono A,Operator Mono B,Source Code Pro,Menlo,Consolas,Monaco,monospace;
+		clear: both;
+		color: #fff;
+		background: rgba(32,28,41,.75);
+		padding: 0;
+		-moz-tab-size: 2;
+		-o-tab-size: 2;
+		tab-size: 2;
+		-ms-word-break: normal;
+		word-break: normal;
+		-webkit-hyphens: none;
+		-ms-hyphens: none;
+		hyphens: none;
+		position: relative;
+		line-height: 28px;
+		border-radius: 8px;
+		min-width: 100px;
+		max-width: 100%;
+		overflow: hidden;
+	}
+
+		pre code {
+			scrollbar-color: #666;
+			scrollbar-width: .5em;
+			background: 0 0;
+			padding: 15px 20px 12px 22px;
+			white-space: pre;
+			-webkit-overflow-scrolling: touch;
+			display: block;
+			overflow-x: auto;
+			max-width: 100%;
+			min-width: 100px;
+			font-size: 16px;
+			line-height: 1.75;
+		}
+
+	.ResultBlock {
+		font-family: Operator Mono A,Operator Mono B,Source Code Pro,Menlo,Consolas,Monaco,monospace;
+		background: rgba(32,28,41,.75);
+		border-radius: 8px;
+		padding: 15px 15px 15px 15px;
+		margin-top: 15px;
+		color: white;
+	}
+</style>
+
+<h1>Functional.Blazor.Components Examples</h1>
+
+<ul>
+	<li><a href="#OptionMatch">OptionMatch</a></li>
+	<li><a href="#Some">Some</a></li>
+	<li><a href="#None">None</a></li>
+	<li><a href="#OptionMatchAsync">OptionMatchAsync</a></li>
+	<li><a href="#OptionFactory">OptionFactory</a></li>
+	<li><a href="#OptionFactoryAsync">OptionFactoryAsync</a></li>
+</ul>
+
+<hr />
+
+<h3 id="Some">Some</h3>
+<pre><code>@("<Some Option=\"MyOption\" Context=\"text\">Some: @text</Some>")</code></pre>
+<button @onclick="@(() => { SomeOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
+<button @onclick="@(() => { SomeOption = Option.Some(Option.None<string>()); })">None</button>
+<div class="ResultBlock">
+	<Some Option="SomeOption">
+		<Some Option="@context" Context="text">Some: @text</Some>
+	</Some>
+</div>
+@code
+{
+	public Option<Option<string>> SomeOption = Option.None<Option<string>>();
+}
+
+<hr />
+
+<h3 id="None">None</h3>
+<pre><code>@("<None Option=\"MyOption\">None</None>")</code></pre>
+<button @onclick="@(() => { NoneOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
+<button @onclick="@(() => { NoneOption = Option.Some(Option.None<string>()); })">None</button>
+<div class="ResultBlock">
+	<Some Option="NoneOption">
+		<None Option="@context">None</None>
+	</Some>
+</div>
+@code
+{
+	public Option<Option<string>> NoneOption = Option.None<Option<string>>();
+}
+
+<hr />
+
+<h3 id="OptionMatch">OptionMatch</h3>
+<pre><code>@("<OptionMatch Option=\"MyOption\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n</OptionMatch>")</code></pre>
+<button @onclick="@(() => { OptionMatchOption = Option.Some(Option.Some<string>("Some value")); })">Some</button>
+<button @onclick="@(() => { OptionMatchOption = Option.Some(Option.None<string>()); })">None</button>
+<div class="ResultBlock">
+	<Some Option="OptionMatchOption">
+		<OptionMatch Option="@context">
+			<Some Context="text">Some: @text</Some>
+			<None>None</None>
+		</OptionMatch>
+	</Some>
+</div>
+@code
+{
+	public Option<Option<string>> OptionMatchOption = Option.None<Option<string>>();
+}
+
+<hr />
+
+<h3 id="OptionMatchAsync">OptionMatchAsync</h3>
+<pre><code>@("<OptionMatchAsync Option=\"myOption\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n\t<Loading>Loading. . .</Loading>\n</OptionMatchAsync>")</code></pre>
+<button @onclick="@(() => { OptionMatchAsyncOption = Option.Some<Task<Option<string>>>(OptionMatchAsync_SomeAsync()); })">Some</button>
+<button @onclick="@(() => { OptionMatchAsyncOption = Option.Some<Task<Option<string>>>(OptionMatchAsync_NoneAsync()); })">None</button>
+<div class="ResultBlock">
+	<Some Option="OptionMatchAsyncOption">
+		<OptionMatchAsync Option="@context">
+			<Some Context="text">Some: @text</Some>
+			<None>None</None>
+			<Loading>Loading. . .</Loading>
+		</OptionMatchAsync>
+	</Some>
+</div>
+@code
+{
+	public Option<Task<Option<string>>> OptionMatchAsyncOption = Option.None<Task<Option<string>>>();
+	private async Task<Option<string>> OptionMatchAsync_SomeAsync()
+	{
+		await Task.Delay(2000);
+		return Option.Some<string>("Some value");
+	}
+	private async Task<Option<string>> OptionMatchAsync_NoneAsync()
+	{
+		await Task.Delay(2000);
+		return Option.None<string>();
+	}
+}
+
+<hr />
+
+<h3 id="OptionFactory">OptionFactory</h3>
+<pre><code>@("<OptionFactory @ref=\"myFactory\" Factory=\"GetOptionMethod\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n</OptionFactory>")</code></pre>
+<pre><code>@("<button @onclick=\"@(() => myFactory.Refresh())\">Refresh</button>")</code></pre>
+<button @onclick="@(() => { optionFactoryIsSome = true; optionFactory.Refresh(); })">Refresh With Some</button>
+<button @onclick="@(() => { optionFactoryIsSome = false; optionFactory.Refresh(); })">Refresh With None</button>
+<div class="ResultBlock">
+	<OptionFactory @ref="optionFactory" Factory="@(() => optionFactoryIsSome ? Option.Some("Some Value") : Option.None<string>())" InitializeWithValue="false">
+		<Some Context="text">Some: @text</Some>
+		<None>None</None>
+	</OptionFactory>
+</div>
+@code
+{
+	private OptionFactory<string> optionFactory;
+	private bool optionFactoryIsSome = false;
+}
+
+<hr />
+
+<h3 id="OptionFactoryAsync">OptionFactoryAsync</h3>
+<pre><code>@("<OptionFactoryAsync @ref=\"myFactory\" Factory=\"GetOptionTask\" InitializeWithValue=\"false\">\n\t<Some Context=\"text\">Some: @text</Some>\n\t<None>None</None>\n\t<Loading>Loading. . .</Loading>\n</OptionFactoryAsync>")</code></pre>
+<pre><code>@("<button @onclick=\"@(async () => await myFactory.Refresh())\">Refresh</button>")</code></pre>
+<button @onclick="@(async () => { optionFactoryAsyncIsSome = true; await optionFactoryAsync.Refresh(); })">Refresh With Some</button>
+<button @onclick="@(async () => { optionFactoryAsyncIsSome = false; await optionFactoryAsync.Refresh(); })">Refresh With None</button>
+<div class="ResultBlock">
+	<OptionFactoryAsync @ref="optionFactoryAsync" Factory="OptionFactoryAsyncTask" InitializeWithValue="false">
+		<Some Context="text">Some: @text</Some>
+		<None>None</None>
+		<Loading>Loading. . .</Loading>
+	</OptionFactoryAsync>
+</div>
+@code
+{
+	private OptionFactoryAsync<string> optionFactoryAsync;
+	private async Task<Option<string>> OptionFactoryAsyncTask()
+	{
+		await Task.Delay(2000);
+		return optionFactoryAsyncIsSome ? Option.Some("Some Value") : Option.None<string>();
+	}
+	private bool optionFactoryAsyncIsSome = false;
+}
+
+<hr />
+
+<h3 id="Success">Success</h3>
+<pre><code>@("<Success Result=\"MyResult\" Context=\"text\">Success: @text</Success>")</code></pre>
+<button @onclick="@(() => { SuccessResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
+<button @onclick="@(() => { SuccessResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
+<div class="ResultBlock">
+	<Some Option="SuccessResult">
+		<Success Result="@context" Context="text">Success: @text</Success>
+	</Some>
+</div>
+@code
+{
+	public Option<Result<string, Exception>> SuccessResult = Option.None<Result<string, Exception>>();
+}
+
+<hr />
+
+<h3 id="Failure">Failure</h3>
+<pre><code>@("<Failure Result=\"MyResult\" Context=\"text\">Failure: @text</Failure>")</code></pre>
+<button @onclick="@(() => { FailureResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
+<button @onclick="@(() => { FailureResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
+<div class="ResultBlock">
+	<Some Option="FailureResult">
+		<Failure Result="@context" Context="failure">Failure: @failure</Failure>
+	</Some>
+</div>
+@code
+{
+	public Option<Result<string, Exception>> FailureResult = Option.None<Result<string, Exception>>();
+}
+
+<hr />
+
+<h3 id="ResultMatch">ResultMatch</h3>
+<pre><code>@("<ResultMatch Result=\"MyResult\">\n\t<Success Context=\"text\">Success: @text</Success>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n</ResultMatch>")</code></pre>
+<button @onclick="@(() => { ResultMatchResult = Option.Some(Result.Success<string, Exception>("Some Value")); })">Success</button>
+<button @onclick="@(() => { ResultMatchResult = Option.Some(Result.Failure<string, Exception>(new Exception("Some Error"))); })">Failure</button>
+<div class="ResultBlock">
+	<Some Option="@ResultMatchResult">
+		<ResultMatch Result="@context">
+			<Success Context="text">Success: @text</Success>
+			<Failure Context="failure">Failure: @failure</Failure>
+		</ResultMatch>
+	</Some>
+</div>
+@code
+{
+	public Option<Result<string, Exception>> ResultMatchResult = Option.None<Result<string, Exception>>();
+}
+
+<hr />
+
+<h3 id="ResultMatchAsync">ResultMatchAsync</h3>
+<pre><code>@("<ResultMatchAsync Result=\"myResultTask\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n\t<Loading>Loading. . .</Loading>\n</OptionMatchAsync>")</code></pre>
+<button @onclick="@(() => { ResultMatchAsyncResult = Option.Some<Task<Result<string, Exception>>>(ResultMatchAsync_SuccessAsync()); })">Success</button>
+<button @onclick="@(() => { ResultMatchAsyncResult = Option.Some<Task<Result<string, Exception>>>(ResultMatchAsync_FailureAsync()); })">Failure</button>
+<div class="ResultBlock">
+	<Some Option="ResultMatchAsyncResult">
+		<ResultMatchAsync Result="@context">
+			<Success Context="text">Success: @text</Success>
+			<Failure Context="failure">Failure: @failure</Failure>
+			<Loading>Loading. . .</Loading>
+		</ResultMatchAsync>
+	</Some>
+</div>
+@code
+{
+	public Option<Task<Result<string, Exception>>> ResultMatchAsyncResult = Option.None<Task<Result<string, Exception>>>();
+	private async Task<Result<string, Exception>> ResultMatchAsync_SuccessAsync()
+	{
+		await Task.Delay(2000);
+		return Result.Success<string, Exception>("Some Value");
+	}
+	private async Task<Result<string, Exception>> ResultMatchAsync_FailureAsync()
+	{
+		await Task.Delay(2000);
+		return Result.Failure<string, Exception>(new Exception("Some Error"));
+	}
+}
+
+<hr />
+
+<h3 id="ResultFactory">ResultFactory</h3>
+<pre><code>@("<ResultFactory @ref=\"myFactory\" Factory=\"GetResultMethod\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n</ResultFactory>")</code></pre>
+<pre><code>@("<button @onclick=\"@(() => myFactory.Refresh())\">Refresh</button>")</code></pre>
+<button @onclick="@(() => { resultFactoryIsSuccess = true; resultFactory.Refresh(); })">Refresh With Success</button>
+<button @onclick="@(() => { resultFactoryIsSuccess = false; resultFactory.Refresh(); })">Refresh With Failure</button>
+<div class="ResultBlock">
+	<ResultFactory @ref="resultFactory" Factory="@(() => resultFactoryIsSuccess ? Result.Success<string, Exception>("Some Value") : Result.Failure<string, Exception>(new Exception("Some Error")))" InitializeWithValue="false">
+		<Success Context="text">Success: @text</Success>
+		<Failure Context="failure">Failure: @failure</Failure>
+	</ResultFactory>
+</div>
+@code
+{
+	private ResultFactory<string, Exception> resultFactory;
+	private bool resultFactoryIsSuccess = false;
+}
+
+<hr />
+
+<h3 id="ResultFactoryAsync">ResultFactoryAsync</h3>
+<pre><code>@("<ResultFactoryAsync @ref=\"myFactory\" Factory=\"GetResultTask\" InitializeWithValue=\"false\">\n\t<Success Context=\"text\">Success: @text</Some>\n\t<Failure Context=\"failure\">Failure: @failure</Failure>\n\t<Loading>Loading. . .</Loading>\n</ResultFactoryAsync>")</code></pre>
+<pre><code>@("<button @onclick=\"@(async () => await myFactory.Refresh())\">Refresh</button>")</code></pre>
+<button @onclick="@(async () => { resultFactoryAsyncIsSuccess = true; await resultFactoryAsync.Refresh(); })">Refresh With Success</button>
+<button @onclick="@(async () => { resultFactoryAsyncIsSuccess = false; await resultFactoryAsync.Refresh(); })">Refresh With Failure</button>
+<div class="ResultBlock">
+	<ResultFactoryAsync @ref="resultFactoryAsync" Factory="ResultFactoryAsyncTask" InitializeWithValue="false">
+		<Success Context="text">Success: @text</Success>
+		<Failure Context="failure">Failure: @failure</Failure>
+		<Loading>Loading. . .</Loading>
+	</ResultFactoryAsync>
+</div>
+@code
+{
+	private ResultFactoryAsync<string, Exception> resultFactoryAsync;
+	private async Task<Result<string, Exception>> ResultFactoryAsyncTask()
+	{
+		await Task.Delay(2000);
+		return resultFactoryAsyncIsSuccess ? Result.Success<string, Exception>("Some Value") : Result.Failure<string, Exception>(new Exception("Some Error"));
+	}
+	private bool resultFactoryAsyncIsSuccess = false;
+}
+
+<hr />

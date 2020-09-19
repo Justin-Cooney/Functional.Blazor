@@ -1,0 +1,11 @@
+﻿@typeparam TSuccess
+@typeparam TFailure
+
+<OptionMatch Option="@_innerResult">
+	<Some Context="result">
+		<ResultMatch Result="@result" Success="@Success" Failure="@Failure" />
+	</Some>
+	<None>
+		@Loading
+	</None>
+</OptionMatch>

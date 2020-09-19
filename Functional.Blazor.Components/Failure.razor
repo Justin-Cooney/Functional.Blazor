@@ -1,0 +1,6 @@
+﻿@typeparam TSuccess
+@typeparam TFailure
+
+@Result.Match(
+	success => null,
+	failure => ChildContent(failure))
