@@ -60,7 +60,7 @@ stages:
     - task: AzureFileCopy@4
       inputs:
         SourcePath: '$(System.ArtifactsDirectory)'
-        azureSubscription: 'Free Trial(fa07ebbf-219b-4029-8b6e-0d4b3e6eac27)'
+        azureSubscription: 'functionalblazor_ServiceConnection'
         Destination: 'AzureBlob'
         storage: 'functionalblazor'
         ContainerName: '$web'
