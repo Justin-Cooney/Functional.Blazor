@@ -46,9 +46,39 @@ stages:
         ArtifactName: 'exampleapp'
         publishLocation: 'Container'
 
-- stage: DeployExampleApp
+- stage: Int
+  dependsOn:
+  - Build
   jobs:
   - job: DeployExampleApp
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'exampleapp'
+        downloadPath: '$(System.ArtifactsDirectory)'
+        
+
+
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
+        azureSubscription: 'functionalblazor_ServiceConnection'
+        Destination: 'AzureBlob'
+        storage: 'functionalblazor'
+        ContainerName: '$web'
+        cleanTargetBeforeCopy: true
+
+- stage: Prod
+  dependsOn:
+  - Build
+  - Int
+  jobs:
+  - deployment: Prod
+    environment: 'Prod'
+  - job: DeployExampleApp
+
     steps:
     - task: DownloadBuildArtifacts@0
       inputs:
