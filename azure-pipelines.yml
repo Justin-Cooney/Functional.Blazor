@@ -37,7 +37,11 @@ stages:
       inputs: 
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-        
+    - task: VSBuild@1
+      inputs:
+        solution: '$(componentsProject)'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
     - task: NuGetCommand@2
       inputs:
         command: 'pack'
