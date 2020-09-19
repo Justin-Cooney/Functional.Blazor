@@ -1,0 +1,153 @@
+name: 1.0.$(Rev:r)
+
+trigger:
+- master
+
+pool:
+  vmImage: 'windows-latest'
+
+variables:
+  exampleAppProject: '**/Functional.Blazor.ExampleApp.csproj'
+  componentsProject: '**/Functional.Blazor.Components.csproj'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+  nugetDevelopVersion: '$(Build.BuildNumber)-develop'
+  nugetVersion: '$(Build.BuildNumber)'
+stages:
+- stage: Build
+  jobs:
+  - job: BuildExampleApp
+    steps:
+    - task: NuGetToolInstaller@1
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
+
+    - task: VSBuild@1
+      inputs:
+        solution: '$(exampleAppProject)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/exampleapppackage"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(build.artifactStagingDirectory)/exampleapppackage/*.zip'
+        destinationFolder: '$(build.artifactStagingDirectory)/exampleapp'
+        cleanDestinationFolder: true
+    - task: VSTest@2
+      inputs: 
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
+
+    - task: DotNetCoreCLI@2
+      displayName: Build all projects
+      inputs:
+        projects: '$(componentsProject)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
+
+
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnugetdev'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: nugetDevelopVersion
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnuget'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: nugetVersion
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
+        ArtifactName: 'exampleapp'
+        publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)/componentsnugetdev'
+        ArtifactName: 'componentsnugetdev'
+        publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)/componentsnuget'
+        ArtifactName: 'componentsnuget'
+        publishLocation: 'Container'
+
+- stage: Int
+  dependsOn:
+  - Build
+  jobs:
+  - job: DeployExampleApp
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'exampleapp'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
+        azureSubscription: 'functionalBlazorInt_ServiceAccount'
+        Destination: 'AzureBlob'
+        storage: 'functionalblazorint'
+        ContainerName: '$web'
+        cleanTargetBeforeCopy: true
+
+  - job: PublishDevelopNuget
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'componentsnugetdev'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: NuGetCommand@2
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
+
+- stage: Prod
+  dependsOn:
+  - Build
+  - Int
+  jobs:
+  - deployment: Prod
+    environment: 'Prod'
+  - job: DeployExampleApp
+
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'exampleapp'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
+        azureSubscription: 'functionalblazor_ServiceConnection'
+        Destination: 'AzureBlob'
+        storage: 'functionalblazor'
+        ContainerName: '$web'
+        cleanTargetBeforeCopy: true
+        
+  - job: PublishNuget
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'componentsnuget'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    - task: NuGetCommand@2
+      inputs:
+        command: 'push'
+        packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+        nuGetFeedType: 'external'
+        publishFeedCredentials: 'Nuget.org'
