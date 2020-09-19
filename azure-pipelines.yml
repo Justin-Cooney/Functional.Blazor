@@ -1,4 +1,4 @@
-name: $(Major).$(Minor).$(Patch)
+name: 1.0.$(Rev:r)
 
 trigger:
 - master
@@ -11,9 +11,6 @@ variables:
   componentsProject: '**/Functional.Blazor.Components.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
-  Major: 1
-  Minor: 0
-  Patch: $(Rev:r)
 
 stages:
 - stage: Build
