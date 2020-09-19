@@ -1,7 +1,4 @@
-# ASP.NET
-# Build and test ASP.NET projects.
-# Add steps that publish symbols, save build artifacts, deploy, and more:
-# https://docs.microsoft.com/azure/devops/pipelines/apps/aspnet/build-aspnet-4
+name: 1.0.0.$(Rev:.r)
 
 trigger:
 - master
@@ -10,7 +7,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  exampleAppProject: 'Functional.Blazor.ExampleApp.csproj'
+  exampleAppProject: '**/Functional.Blazor.ExampleApp.csproj'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
