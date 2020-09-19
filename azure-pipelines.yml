@@ -21,7 +21,7 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '$(exampleAppProject)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/exampleapppackage"'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
