@@ -12,55 +12,55 @@ variables:
   buildConfiguration: 'Release'
 
 stages:
-  -stage: Build
+- stage: Build
   jobs:
-    - job: Build
-      steps:
-      - task: NuGetToolInstaller@1
+  - job: Build
+    steps:
+    - task: NuGetToolInstaller@1
 
-      - task: NuGetCommand@2
-        inputs:
-          restoreSolution: '**/*.sln'
+    - task: NuGetCommand@2
+      inputs:
+        restoreSolution: '**/*.sln'
 
-      - task: VSBuild@1
-        inputs:
-          solution: '$(exampleAppProject)'
-          msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/exampleapppackage"'
-          platform: '$(buildPlatform)'
-          configuration: '$(buildConfiguration)'
+    - task: VSBuild@1
+      inputs:
+        solution: '$(exampleAppProject)'
+        msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/exampleapppackage"'
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-      - task: ExtractFiles@1
-        inputs:
-          archiveFilePatterns: '$(build.artifactStagingDirectory)/exampleapppackage/*.zip'
-          destinationFolder: '$(build.artifactStagingDirectory)/exampleapp'
-          cleanDestinationFolder: true
+    - task: ExtractFiles@1
+      inputs:
+        archiveFilePatterns: '$(build.artifactStagingDirectory)/exampleapppackage/*.zip'
+        destinationFolder: '$(build.artifactStagingDirectory)/exampleapp'
+        cleanDestinationFolder: true
 
-      - task: VSTest@2
-        inputs: 
-          platform: '$(buildPlatform)'
-          configuration: '$(buildConfiguration)'
+    - task: VSTest@2
+      inputs: 
+        platform: '$(buildPlatform)'
+        configuration: '$(buildConfiguration)'
 
-      - task: PublishBuildArtifacts@1
-        inputs:
-          PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
-          ArtifactName: 'exampleapp'
-          publishLocation: 'Container'
+    - task: PublishBuildArtifacts@1
+      inputs:
+        PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
+        ArtifactName: 'exampleapp'
+        publishLocation: 'Container'
 
-  -stage: DeployExampleApp
+- stage: DeployExampleApp
   jobs:
-    - job: DeployExampleApp
-      steps:
-      - task: DownloadBuildArtifacts@0
-        inputs:
-          buildType: 'current'
-          downloadType: 'single'
-          artifactName: 'exampleapp'
-          downloadPath: '$(System.ArtifactsDirectory)'
-      
-      - task: AzureFileCopy@4
-        inputs:
-          SourcePath: '$(System.ArtifactsDirectory)'
-          azureSubscription: 'Free Trial(fa07ebbf-219b-4029-8b6e-0d4b3e6eac27)'
-          Destination: 'AzureBlob'
-          storage: 'functionalblazor'
-          ContainerName: '$web'
+  - job: DeployExampleApp
+    steps:
+    - task: DownloadBuildArtifacts@0
+      inputs:
+        buildType: 'current'
+        downloadType: 'single'
+        artifactName: 'exampleapp'
+        downloadPath: '$(System.ArtifactsDirectory)'
+    
+    - task: AzureFileCopy@4
+      inputs:
+        SourcePath: '$(System.ArtifactsDirectory)'
+        azureSubscription: 'Free Trial(fa07ebbf-219b-4029-8b6e-0d4b3e6eac27)'
+        Destination: 'AzureBlob'
+        storage: 'functionalblazor'
+        ContainerName: '$web'
