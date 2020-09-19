@@ -37,11 +37,14 @@ stages:
       inputs: 
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
-    - task: VSBuild@1
+
+    - task: DotNetCoreCLI@2
+      displayName: Build all projects
       inputs:
-        solution: '$(componentsProject)'
-        platform: '$(buildPlatform)'
-        configuration: '$(buildConfiguration)'
+        projects: '$(componentsProject)'
+        arguments: '--configuration $(buildConfiguration) --no-restore'
+
+
     - task: NuGetCommand@2
       inputs:
         command: 'pack'
