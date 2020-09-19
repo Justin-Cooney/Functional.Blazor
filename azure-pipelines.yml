@@ -21,9 +21,15 @@ steps:
 - task: VSBuild@1
   inputs:
     solution: '$(exampleAppProject)'
-    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=false /p:SkipInvalidConfigurations=true /p:OutDir="$(build.artifactStagingDirectory)/exampleapp"'
+    msbuildArgs: '/p:DeployOnBuild=true /p:WebPublishMethod=Package /p:PackageAsSingleFile=true /p:SkipInvalidConfigurations=true /p:PackageLocation="$(build.artifactStagingDirectory)/'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+
+- task: ExtractFiles@1
+  inputs:
+    archiveFilePatterns: '$(build.artifactStagingDirectory)/exampleapppackage/*.zip'
+    destinationFolder: '$(build.artifactStagingDirectory)/exampleapp'
+    cleanDestinationFolder: true
 
 - task: VSTest@2
   inputs:
@@ -32,6 +38,6 @@ steps:
 
 - task: PublishBuildArtifacts@1
   inputs:
-    PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp'
+    PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
     ArtifactName: 'exampleapp'
     publishLocation: 'Container'
