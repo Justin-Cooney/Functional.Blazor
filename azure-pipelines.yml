@@ -61,7 +61,7 @@ stages:
 
     - task: AzureFileCopy@4
       inputs:
-        SourcePath: '$(System.ArtifactsDirectory)/*'
+        SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
         azureSubscription: 'functionalblazor_ServiceConnection'
         Destination: 'AzureBlob'
         storage: 'functionalblazor'
