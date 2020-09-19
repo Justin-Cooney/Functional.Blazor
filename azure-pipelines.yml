@@ -43,7 +43,8 @@ stages:
       displayName: Build all projects
       inputs:
         projects: '$(componentsProject)'
-        arguments: '--configuration $(buildConfiguration) --no-restore'
+        arguments: '--configuration $(buildConfiguration)'
+
 
 
     - task: NuGetCommand@2
