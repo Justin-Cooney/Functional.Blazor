@@ -40,42 +40,35 @@ stages:
       inputs: 
         platform: '$(buildPlatform)'
         configuration: '$(buildConfiguration)'
+        
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnugetdev'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: '$(Build.BuildNumber)-develop'
+    - task: NuGetCommand@2
+      inputs:
+        command: 'pack'
+        packagesToPack: '$(componentsProject)'
+        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnuget'
+        versioningScheme: 'byEnvVar'
+        versionEnvVar: '$(Build.BuildNumber)'
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
         ArtifactName: 'exampleapp'
         publishLocation: 'Container'
-
-  - job: BuildComponentsDevNuget
-    steps:
-    - task: NuGetToolInstaller@1
-    - task: NuGetCommand@2
-      inputs:
-        command: 'pack'
-        packagesToPack: '$(componentsProject)'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: '$(Build.BuildNumber)-develop'
-
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(build.artifactStagingDirectory)'
-        ArtifactName: 'componentsdev'
+        PathtoPublish: '$(build.artifactStagingDirectory)/componentsnugetdev'
+        ArtifactName: 'componentnugetdev'
         publishLocation: 'Container'
-
-  - job: BuildComponentsNuget
-    steps:
-    - task: NuGetToolInstaller@1
-    - task: NuGetCommand@2
-      inputs:
-        command: 'pack'
-        packagesToPack: '$(componentsProject)'
-        versioningScheme: 'byEnvVar'
-        versionEnvVar: '$(Build.BuildNumber)'
-
     - task: PublishBuildArtifacts@1
       inputs:
-        PathtoPublish: '$(build.artifactStagingDirectory)'
-        ArtifactName: 'components'
+        PathtoPublish: '$(build.artifactStagingDirectory)/componentsnuget'
+        ArtifactName: 'componentnugetdev'
         publishLocation: 'Container'
 
 - stage: Int
@@ -105,7 +98,7 @@ stages:
       inputs:
         buildType: 'current'
         downloadType: 'single'
-        artifactName: 'componentsdev'
+        artifactName: 'componentsnugetdev'
         downloadPath: '$(System.ArtifactsDirectory)'
     - task: NuGetCommand@2
       inputs:
