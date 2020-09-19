@@ -91,9 +91,9 @@ stages:
     - task: AzureFileCopy@4
       inputs:
         SourcePath: '$(System.ArtifactsDirectory)/exampleapp/*'
-        azureSubscription: 'functionalBlazor-int'
+        azureSubscription: 'functionalBlazorInt_ServiceAccount'
         Destination: 'AzureBlob'
-        storage: 'functionalBlazorint'
+        storage: 'functionalblazorint'
         ContainerName: '$web'
         cleanTargetBeforeCopy: true
 
