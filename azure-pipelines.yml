@@ -45,22 +45,27 @@ stages:
         projects: '$(componentsProject)'
         arguments: '--configuration $(buildConfiguration)'
 
+    - task: MSBuild@1
+      displayName: Build all projects
+      inputs:
+        projects: '$(componentsProject)'
+        arguments: '--configuration $(buildConfiguration)'
 
-
-    - task: NuGetCommand@2
+    - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
         packagesToPack: '$(componentsProject)'
-        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnugetdev'
+        packDirectory: '$(Build.ArtifactStagingDirectory)/componentsnugetdev'
         versioningScheme: 'byEnvVar'
-        versionEnvVar: nugetDevelopVersion
-    - task: NuGetCommand@2
+        versionEnvVar: 'nugetDevelopVersion'
+    - task: DotNetCoreCLI@2
       inputs:
         command: 'pack'
         packagesToPack: '$(componentsProject)'
-        packDestination: '$(Build.ArtifactStagingDirectory)/componentsnuget'
+        packDirectory: '$(Build.ArtifactStagingDirectory)/componentsnuget'
         versioningScheme: 'byEnvVar'
-        versionEnvVar: nugetVersion
+        versionEnvVar: 'nugetDevelopVersion'
+
     - task: PublishBuildArtifacts@1
       inputs:
         PathtoPublish: '$(build.artifactStagingDirectory)/exampleapp/Content/D_C/a/1/s/Functional.Blazor.ExampleApp/obj/Release/netstandard2.1/PubTmp/Out/wwwroot'
