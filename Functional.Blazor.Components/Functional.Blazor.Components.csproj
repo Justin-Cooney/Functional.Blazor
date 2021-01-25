@@ -3,8 +3,8 @@
   <PropertyGroup>
     <TargetFrameworks>netstandard2.1;net5.0</TargetFrameworks>
     <RazorLangVersion>3.0</RazorLangVersion>
-    <Authors>Justin Cooney</Authors>
-    <Description>A collection of Blazor Component for the C# Functional library</Description>
+    <Authors>Justin Cooney + contributors</Authors>
+    <Description>A collection of Blazor components for the C# Functional library</Description>
     <PackageProjectUrl>https://functionalblazor.z13.web.core.windows.net/</PackageProjectUrl>
     <RepositoryUrl>https://github.com/Justin-Cooney/Functional.Blazor</RepositoryUrl>
 	<Version Condition=" '$(BUILD_BUILDNUMBER)' == '' ">0.0.1-local</Version>
